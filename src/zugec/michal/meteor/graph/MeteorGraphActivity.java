@@ -1,4 +1,4 @@
-package zugec.michal.meteo.graph;
+package zugec.michal.meteor.graph;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+
+import zugec.michal.meteor.graph.R;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,19 +19,19 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 
-public class MeteoGraphActivity extends Activity {
+public class MeteorGraphActivity extends Activity {
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        MeteoGraphView view = new MeteoGraphView(this);
+        MeteorGraphView view = new MeteorGraphView(this);
         setContentView(view);
     }
 
-	private class MeteoGraphView extends View {
+	private class MeteorGraphView extends View {
 		
-		public MeteoGraphView(Context context) {
+		public MeteorGraphView(Context context) {
 			super(context);
 			// TODO Auto-generated constructor stub
 		}
@@ -225,9 +227,9 @@ public class MeteoGraphActivity extends Activity {
 			
 			paint.setColor(Color.WHITE);
 			//canvas cells
-			x_pos = 20;
+			x_pos = canvas_x_offset;
 			for(int x=0;x<31;x++){
-				y_pos = 20;
+				y_pos = canvas_y_offset;
 				x_pos += cell_border;
 				for(int y=0;y<24;y++){
 					y_pos+=cell_border;
