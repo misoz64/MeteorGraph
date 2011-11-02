@@ -13,6 +13,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 
@@ -159,6 +160,16 @@ public class MeteoGraphActivity extends Activity {
 				Integer.decode("#01").intValue()),
 				
 			};
+
+			DisplayMetrics metrics = new DisplayMetrics();
+			getWindowManager().getDefaultDisplay().getMetrics(metrics);
+			int width = metrics.widthPixels;
+			int height = metrics.heightPixels;
+			int smaller_size = (width > height) ? width : height;
+			int cell_border = 1;
+			int cell_size   = smaller_size/(64*cell_border);
+			Log.i(new Integer(cell_border).toString(), new Integer(cell_size).toString());
+
 			Paint paint = new Paint();
 			paint.setStyle(Paint.Style.FILL);
 
@@ -166,8 +177,6 @@ public class MeteoGraphActivity extends Activity {
 			paint.setColor(Color.WHITE);
 			canvas.drawPaint(paint);
 			
-			int cell_border = 1;
-			int cell_size   = 6;
 			int canvas_x_offset = 20;
 			int canvas_y_offset = 20;
 			int canvas_x_size = (31*cell_size)+(32*cell_border);
