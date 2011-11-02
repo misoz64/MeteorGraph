@@ -2,6 +2,7 @@ package zugec.michal.meteor.graph;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -22,7 +23,7 @@ public class MeteorGraph {
 	
 	private void import_data(Context context){
 		try {
-			URL url = new URL("http://radio.data.free.fr/live_datas/Vsetin_112011rmob.TXT");
+			URL url = new URL(IndexActivity.URL);
 			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
 			data = new ArrayList<ArrayList<Integer>>();
 			String line;
@@ -50,6 +51,9 @@ public class MeteorGraph {
 				data.add(tmp_list);
 			}
 			br.close();
+		} catch (MalformedURLException e){
+			Toast.makeText(context, "Error: maiformed URL", Toast.LENGTH_LONG).show();
+			e.printStackTrace();			
 		} catch (Exception e) {
 			Toast.makeText(context, "Internet connection error:\n"
 					              + "    Can't fetch data", Toast.LENGTH_LONG).show();
