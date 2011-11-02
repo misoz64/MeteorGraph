@@ -11,6 +11,7 @@ import android.view.View;
 
 public class MeteorGraphActivity extends Activity {
     /** Called when the activity is first created. */
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,9 +21,12 @@ public class MeteorGraphActivity extends Activity {
     }
 
 	private class MeteorGraphView extends View {
+		private MeteorGraph mg;
 		
 		public MeteorGraphView(Context context) {
 			super(context);
+	        mg = new MeteorGraph(context);
+
 			// TODO Auto-generated constructor stub
 		}
 		
@@ -35,8 +39,7 @@ public class MeteorGraphActivity extends Activity {
 			int height = metrics.heightPixels;
 			int smaller_size = (width > height) ? width : height;
 
-			MeteorGraph mg = new MeteorGraph(canvas);
-			mg.draw(smaller_size);
+			mg.draw(canvas, smaller_size);
 			
 
 		}

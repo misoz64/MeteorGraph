@@ -1,27 +1,26 @@
 package zugec.michal.meteor.graph;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
+import android.widget.Toast;
 
 public class MeteorGraph {
 	private ArrayList<ArrayList<Integer>> data;
 	private Integer max_value;
-	private Canvas canvas;
 	
-	public MeteorGraph(Canvas new_canvas){
-		canvas = new_canvas;
+	public MeteorGraph(Context context){
+		import_data(context);
 	}
 	
-	private void import_data(){
+	private void import_data(Context context){
 		try {
 			URL url = new URL("http://radio.data.free.fr/live_datas/Vsetin_112011rmob.TXT");
 			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
@@ -51,16 +50,14 @@ public class MeteorGraph {
 				data.add(tmp_list);
 			}
 			br.close();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
+			Toast.makeText(context, "Internet connection error:\n"
+					              + "    Can't fetch data", Toast.LENGTH_LONG).show();
 			e.printStackTrace();
 		}
 	}
 	
-	public void draw(int size){
+	public void draw(Canvas canvas, int size){
 		int cell_border = 1;
 		int cell_size   = size/(64*cell_border);
 		Log.i(new Integer(cell_border).toString(), new Integer(cell_size).toString());
@@ -116,8 +113,6 @@ public class MeteorGraph {
 		canvas.drawText("max", canvas_x_offset+canvas_x_size+(2*palette_offset)+cell_size+(2*cell_border),
 				canvas_y_offset+(23*cell_size)+(23*cell_border), paint);
 
-		import_data();
-		
 		paint.setColor(Color.WHITE);
 		//canvas cells
 		x_pos = canvas_x_offset;
