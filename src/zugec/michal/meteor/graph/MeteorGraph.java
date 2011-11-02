@@ -1,9 +1,5 @@
 package zugec.michal.meteor.graph;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import android.content.Context;
@@ -11,54 +7,20 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
-import android.widget.Toast;
 
 public class MeteorGraph {
 	private ArrayList<ArrayList<Integer>> data;
 	private Integer max_value;
+	private DataStorage dataStorage;
 	
 	public MeteorGraph(Context context){
+		dataStorage = new DataStorage(context);
 		import_data(context);
 	}
 	
 	private void import_data(Context context){
-		try {
-			URL url = new URL(IndexActivity.URL);
-			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
-			data = new ArrayList<ArrayList<Integer>>();
-			String line;
-			max_value = 0;
-			int line_num = -1;
-			while((line=br.readLine())!=null){
-				line_num++;					
-				if (line_num<=0){ continue; }
-				String[] array_line=line.split("\\|");
-
-				ArrayList<Integer> tmp_list = new ArrayList<Integer>();
-				for(int i=0;i<array_line.length;i++){
-					Integer val = 0;
-					try{
-						val = Integer.valueOf(array_line[i].trim());
-						if (val > max_value){
-							max_value = val;
-						}
-					}
-					catch(Exception e){
-						val = -1;
-					}
-					tmp_list.add(val);
-				}
-				data.add(tmp_list);
-			}
-			br.close();
-		} catch (MalformedURLException e){
-			Toast.makeText(context, "Error: maiformed URL", Toast.LENGTH_LONG).show();
-			e.printStackTrace();			
-		} catch (Exception e) {
-			Toast.makeText(context, "Internet connection error:\n"
-					              + "    Can't fetch data", Toast.LENGTH_LONG).show();
-			e.printStackTrace();
-		}
+		data = dataStorage.getFileData(IndexActivity.URL);
+		max_value = dataStorage.getMaxValue();
 	}
 	
 	public void draw(Canvas canvas, int size){
