@@ -16,16 +16,16 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class DataStorage{
-	   private static final String DATABASE_NAME = "example.db";
+	   private static final String DATABASE_NAME = "database.db";
 	   private static final int DATABASE_VERSION = 1;
-	   private static final String TABLE_NAME = "table1";
+	   private static final String TABLE_NAME = "observations";
 	 
 	   private Context context;
 	   private SQLiteDatabase db;
 	 
 	   private SQLiteStatement insertStmt;
 	   private static final String INSERT = "insert into "
-	      + TABLE_NAME + "(name) values (?)";
+	      + TABLE_NAME + "(filename, date, time, value) values (?,?,?,?)";
 	   
 	   private Integer max_value;
 	 
@@ -36,8 +36,11 @@ public class DataStorage{
 	      this.insertStmt = this.db.compileStatement(INSERT);
 	   }
 	 
-	   public long insert(String name) {
-	      this.insertStmt.bindString(1, name);
+	   public long insert(String filename, String date, String time, Integer value) {
+	      this.insertStmt.bindString(1, filename);
+	      this.insertStmt.bindString(2, date);
+	      this.insertStmt.bindString(3, time);
+	      this.insertStmt.bindDouble(4, value);
 	      return this.insertStmt.executeInsert();
 	   }
 	 
@@ -47,7 +50,7 @@ public class DataStorage{
 	 
 	   public List<String> selectAll() {
 	      List<String> list = new ArrayList<String>();
-	      Cursor cursor = this.db.query(TABLE_NAME, new String[] { "name" },
+	      Cursor cursor = this.db.query(TABLE_NAME, new String[] { "filename" },
 	        null, null, null, null, "name desc");
 	      if (cursor.moveToFirst()) {
 	         do {
@@ -69,7 +72,7 @@ public class DataStorage{
 	      @Override
 	      public void onCreate(SQLiteDatabase db) {
 	         db.execSQL("CREATE TABLE " + TABLE_NAME
-	        		 + " (id INTEGER PRIMARY KEY, name TEXT)");
+	        		 + " (id INTEGER PRIMARY KEY, filename TEXT, date TEXT, time TEXT, value INTEGER)");
 	      }
 	 
 	      @Override
@@ -119,10 +122,14 @@ public class DataStorage{
 					              + "    Can't fetch data", Toast.LENGTH_LONG).show();
 			e.printStackTrace();
 		}
-		// TODO Auto-generated method stub
 		return data;
 	}
 
 	public Integer getMaxValue() {
 		return max_value;
-	}}
+	}
+
+	public void close(){
+		db.close();
+	}
+}
