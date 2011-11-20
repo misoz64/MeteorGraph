@@ -26,6 +26,7 @@ public class IndexActivity extends ListActivity {
 	public static String UrlBase = "http://smrst.meteory.sk/rmob/";
 	
     private static ArrayList<String> texts = new ArrayList<String>();
+    private Context mContext;
     
     private static class SelectTextAdapter extends BaseAdapter {
         private final Context mContext;
@@ -53,7 +54,7 @@ public class IndexActivity extends ListActivity {
 
     }
 
-    private void import_data(Context mContext){
+    private void import_data(){
 		try {
 			URL url = new URL(UrlBase);
 			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
@@ -87,14 +88,16 @@ public class IndexActivity extends ListActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        import_data(this);
+        
+        mContext=this;
+        import_data();
         
         setListAdapter(new SelectTextAdapter(this));
         ListView lv = getListView();
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                      URL = (String)parent.getItemAtPosition(position);
+         			 Toast.makeText(mContext, "Opening "+URL, Toast.LENGTH_LONG).show();
                 	 startActivity(new Intent(IndexActivity.this, MeteorGraphActivity.class));
                  }
          });                   

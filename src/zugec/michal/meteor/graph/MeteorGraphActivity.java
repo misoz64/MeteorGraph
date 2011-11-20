@@ -33,6 +33,7 @@ public class MeteorGraphActivity extends Activity {
 		protected void onDraw (Canvas canvas)
 		{
 			super.onDraw(canvas);
+			setTitle(IndexActivity.URL);
 			DisplayMetrics metrics = new DisplayMetrics();
 			getWindowManager().getDefaultDisplay().getMetrics(metrics);
 			int width = metrics.widthPixels;
