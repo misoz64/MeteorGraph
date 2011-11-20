@@ -9,19 +9,18 @@ import android.graphics.Paint;
 
 public class MeteorGraph {
 	private ArrayList<ArrayList<Integer>> data;
-	private Integer max_value;
+	private Integer max_value = 0;
 	private DataStorage dataStorage;
 	
 	public MeteorGraph(Context context){
 		dataStorage = new DataStorage(context);
-		import_data(context);
 	}
 	
 	public void close(){
 		dataStorage.close();
 	}
 	
-	private void import_data(Context context){
+	private void import_data(){
 		data = dataStorage.getFileData(IndexActivity.UrlBase, IndexActivity.URL);
 		max_value = dataStorage.getMaxValue();
 	}
@@ -29,7 +28,7 @@ public class MeteorGraph {
 	public void draw(Canvas canvas, int size){
 		int cell_border = 1;
 		int cell_size   = size/(64*cell_border);
-
+		import_data();
 		Paint paint = new Paint();
 		paint.setStyle(Paint.Style.FILL);
 
@@ -96,7 +95,7 @@ public class MeteorGraph {
 						cell_color = color_palette[(int)(((float)val/(float)max_value)*23.0)];
 					}
 				} catch(Exception e){
-					
+					e.getStackTrace();
 				}
 				paint.setColor(cell_color);
 				canvas.drawRect(x_pos, y_pos,

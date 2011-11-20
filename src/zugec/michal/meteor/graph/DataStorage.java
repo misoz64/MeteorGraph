@@ -28,7 +28,7 @@ public class DataStorage{
 	   private static final String INSERT = "insert into "
 	      + TABLE_NAME + "(filename, date, time, value) values (?,?,?,?)";
 	   private OpenHelper openHelper; 
-	   private Integer max_value;
+	   private Integer max_value = 0;
 	 
 	   public DataStorage(Context context) {
 	      this.context = context;
@@ -46,8 +46,7 @@ public class DataStorage{
 	   }
 	 
 	public ArrayList<ArrayList<Integer>> getFileData(String UrlBase, String URL) {
-		// TODO: check if there is any record for URL in the database
-		// in case of true, fetch and return that data
+		if (URL.isEmpty()) { return null; }
         Cursor cursor = this.db.rawQuery(
         		"SELECT value from observations WHERE filename = \""+URL+"\" ORDER BY date,time", null);
         if(cursor.getCount()==0){

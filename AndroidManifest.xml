@@ -12,7 +12,7 @@
         android:label="@string/app_name" >
         <activity
             android:label="@string/app_name"
-            android:name="IndexActivity" >
+            android:name="MeteorGraphActivity" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity android:label="@string/app_name"
-            	  android:name="MeteorGraphActivity" >
+            	  android:name="IndexActivity" >
             
         </activity>
     </application>

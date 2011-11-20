@@ -98,7 +98,9 @@ public class IndexActivity extends ListActivity {
                  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                      URL = (String)parent.getItemAtPosition(position);
          			 Toast.makeText(mContext, "Opening "+URL, Toast.LENGTH_LONG).show();
-                	 startActivity(new Intent(IndexActivity.this, MeteorGraphActivity.class));
+         			 setResult(RESULT_OK, new Intent());
+         			 finish();
+//                	 startActivity(new Intent(IndexActivity.this, MeteorGraphActivity.class));
                  }
          });                   
     }
