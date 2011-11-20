@@ -6,7 +6,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 
 public class MeteorGraph {
 	private ArrayList<ArrayList<Integer>> data;
@@ -18,6 +17,10 @@ public class MeteorGraph {
 		import_data(context);
 	}
 	
+	public void close(){
+		dataStorage.close();
+	}
+	
 	private void import_data(Context context){
 		data = dataStorage.getFileData(IndexActivity.UrlBase, IndexActivity.URL);
 		max_value = dataStorage.getMaxValue();
@@ -26,7 +29,6 @@ public class MeteorGraph {
 	public void draw(Canvas canvas, int size){
 		int cell_border = 1;
 		int cell_size   = size/(64*cell_border);
-		Log.i(new Integer(cell_border).toString(), new Integer(cell_size).toString());
 
 		Paint paint = new Paint();
 		paint.setStyle(Paint.Style.FILL);
@@ -76,8 +78,8 @@ public class MeteorGraph {
 				canvas_y_offset, paint);
 		canvas.drawText("mid", canvas_x_offset+canvas_x_size+(2*palette_offset)+cell_size+(2*cell_border),
 				canvas_y_offset+(12*cell_size)+(12*cell_border), paint);
-		canvas.drawText("max", canvas_x_offset+canvas_x_size+(2*palette_offset)+cell_size+(2*cell_border),
-				canvas_y_offset+(23*cell_size)+(23*cell_border), paint);
+		canvas.drawText(max_value.toString(), canvas_x_offset+canvas_x_size+(2*palette_offset)+cell_size+(2*cell_border),
+				canvas_y_offset+(24*cell_size)+(24*cell_border), paint);
 
 		paint.setColor(Color.WHITE);
 		//canvas cells

@@ -11,6 +11,7 @@ import android.view.View;
 
 public class MeteorGraphActivity extends Activity {
     /** Called when the activity is first created. */
+	private MeteorGraph mg;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -21,7 +22,6 @@ public class MeteorGraphActivity extends Activity {
     }
 
 	private class MeteorGraphView extends View {
-		private MeteorGraph mg;
 		
 		public MeteorGraphView(Context context) {
 			super(context);
@@ -44,4 +44,8 @@ public class MeteorGraphActivity extends Activity {
 
 		}
     }
+	protected void onDestroy(){
+		super.onDestroy();
+		mg.close();
+	}
 }

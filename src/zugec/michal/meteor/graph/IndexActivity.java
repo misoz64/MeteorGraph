@@ -19,14 +19,15 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class IndexActivity extends ListActivity {
-	public static String INTENT_BUNDLE_TEXT = "text";
-	
 	public static String URL = "";
 	public static String UrlBase = "http://smrst.meteory.sk/rmob/";
+	
     private static ArrayList<String> texts = new ArrayList<String>();
-
+    private static Context mContext;
+    
     private static class SelectTextAdapter extends BaseAdapter {
         private final Context mContext;
 
@@ -59,7 +60,6 @@ public class IndexActivity extends ListActivity {
 			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
 			String line;
 			while((line=br.readLine())!=null){
-				// Extracted url from <a...></a>
 				if (line.matches(".*<a\\s+href.*rmob.TXT.*")){
 				    Pattern link = Pattern.compile("href=\"([^>]*)\">.*</[aA]>");;
 				    Matcher tagmatch = link.matcher(line);
@@ -70,20 +70,26 @@ public class IndexActivity extends ListActivity {
 			}
 			br.close();
 		} catch (MalformedURLException e){
-//			Toast.makeText(context, "Error: maiformed URL", Toast.LENGTH_LONG).show();
+			Toast.makeText(mContext, "Error: maiformed URL", Toast.LENGTH_LONG).show();
 			e.printStackTrace();			
 		} catch (Exception e) {
-//			Toast.makeText(context, "Internet connection error:\n"
-//					              + "    Can't fetch data", Toast.LENGTH_LONG).show();
+			Toast.makeText(mContext, "Internet connection error:\n"
+					              + "    Can't fetch data", Toast.LENGTH_LONG).show();
 			e.printStackTrace();
 		}
-    	
+    	DataStorage ds = new DataStorage(mContext);
+    	for(String file:ds.getFilesIndex()){
+    		if(!texts.contains(file)){
+    			texts.add(file);
+    		}
+    	}
     }
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+        mContext = this;
+
         import_data();
         
         setListAdapter(new SelectTextAdapter(this));

@@ -5,7 +5,6 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,12 +27,12 @@ public class DataStorage{
 	   private SQLiteStatement insertStmt;
 	   private static final String INSERT = "insert into "
 	      + TABLE_NAME + "(filename, date, time, value) values (?,?,?,?)";
-	   
+	   private OpenHelper openHelper; 
 	   private Integer max_value;
 	 
 	   public DataStorage(Context context) {
 	      this.context = context;
-	      OpenHelper openHelper = new OpenHelper(this.context);
+	      openHelper = new OpenHelper(this.context);
 	      this.db = openHelper.getWritableDatabase();
 	      this.insertStmt = this.db.compileStatement(INSERT);
 	   }
@@ -46,35 +45,43 @@ public class DataStorage{
 	      return this.insertStmt.executeInsert();
 	   }
 	 
-	   public void deleteAll() {
-	      this.db.delete(TABLE_NAME, null, null);
-	   }
-	 
-	   public List<String> selectAll() {
-	      List<String> list = new ArrayList<String>();
-	      Cursor cursor = this.db.query(TABLE_NAME, new String[] { "filename" },
-	        null, null, null, null, "name desc");
-	      if (cursor.moveToFirst()) {
-	         do {
-	            list.add(cursor.getString(0));
-	         } while (cursor.moveToNext());
-	      }
-	      if (cursor != null && !cursor.isClosed()) {
-	         cursor.close();
-	      }
-	      return list;
-	   }
-
-	   
 	public ArrayList<ArrayList<Integer>> getFileData(String UrlBase, String URL) {
 		// TODO: check if there is any record for URL in the database
 		// in case of true, fetch and return that data
-        Cursor cursor = this.db.rawQuery("SELECT value from observations WHERE filename = \""+URL+"\"", null);
+        Cursor cursor = this.db.rawQuery(
+        		"SELECT value from observations WHERE filename = \""+URL+"\" ORDER BY date,time", null);
         if(cursor.getCount()==0){
+        	Log.i(this.toString(), "No cached data found, retrieving via HTTP");
         	return fetchHTTPData(UrlBase, URL);
         } else {
-        	// FIXME: fetch data from database
-        	return null;
+        	Log.i(this.toString(), "Cached data found("+cursor.getCount()+"), retrieving from DB");
+            ArrayList<ArrayList<Integer>> data = new ArrayList<ArrayList<Integer>>();
+            if (cursor.moveToFirst()) {
+  	    	  Integer x=0;
+  	    	  
+  	    	  ArrayList<Integer> tmp_row = new ArrayList<Integer>();
+ 	         do {
+ 	            if(x>23){
+ 	            	data.add(tmp_row);
+ 	            	tmp_row= new ArrayList<Integer>();
+ 	            	x=0; 	            	
+ 	            }
+ 	            tmp_row.add(cursor.getInt(0));
+ 	            x++;
+ 	         } while (cursor.moveToNext());
+            }
+            if (cursor != null && !cursor.isClosed()) {
+ 	         cursor.close();
+            }
+            Cursor cursor2 = db.rawQuery(
+            		"SELECT MAX(value) FROM observations WHERE filename=\""+URL+"\"", null);
+            if (cursor2.moveToFirst()){
+            	max_value = cursor2.getInt(0);
+            }
+            if (cursor2 != null && !cursor2.isClosed()) {
+ 	         cursor2.close();
+            }
+        	return data;
         }
 	}
 
@@ -118,7 +125,6 @@ public class DataStorage{
 					    }
 						String date = year+"-"+month+"-"+String.format("%02d", day);
 						String time = String.format("%02d:00", i-1);
-//						Log.i(URL, "Date:"+date+", time:"+time);
 						insert(URL, date, time, val);
 						tmp_list.add(val);
 					}
@@ -136,7 +142,24 @@ public class DataStorage{
 		}
 		return data;
 	}
-	   
+
+	public ArrayList<String> getFilesIndex() {
+        Cursor cursor = this.db.rawQuery(
+        		"SELECT DISTINCT(filename) from observations", null);
+        ArrayList<String> files = new ArrayList<String>();
+        if(cursor.getCount() > 0){
+            if (cursor.moveToFirst()) {
+ 	         do {
+ 	            files.add(cursor.getString(0));
+ 	         } while (cursor.moveToNext());
+            }
+            if (cursor != null && !cursor.isClosed()) {
+ 	         cursor.close();
+            }
+        }
+		return files;
+	}
+
 	   
 	   private static class OpenHelper extends SQLiteOpenHelper {
 	 
@@ -156,6 +179,7 @@ public class DataStorage{
 	         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
 	         onCreate(db);
 	      }
+	      
 	   }
 
 	public Integer getMaxValue() {
@@ -165,4 +189,5 @@ public class DataStorage{
 	public void close(){
 		db.close();
 	}
+
 }
