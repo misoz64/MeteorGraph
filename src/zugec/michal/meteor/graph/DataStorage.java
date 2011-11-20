@@ -49,7 +49,7 @@ public class DataStorage{
 		if (URL.isEmpty()) { return null; }
         Cursor cursor = this.db.rawQuery(
         		"SELECT value from observations WHERE filename = \""+URL+"\" ORDER BY date,time", null);
-        if(cursor.getCount()==0){
+        if(cursor.getCount()==0 && MeteorGraphActivity.online){
         	Log.i(this.toString(), "No cached data found, retrieving via HTTP");
         	return fetchHTTPData(UrlBase, URL);
         } else {

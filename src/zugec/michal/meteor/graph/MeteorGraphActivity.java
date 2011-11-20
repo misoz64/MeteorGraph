@@ -17,6 +17,7 @@ public class MeteorGraphActivity extends Activity {
     /** Called when the activity is first created. */
 	private MeteorGraph mg;
 	private MeteorGraphView view;
+	public static boolean online;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -26,9 +27,17 @@ public class MeteorGraphActivity extends Activity {
         setContentView(view);
     }
 
+    public boolean onPrepareOptionsMenu(Menu menu){
+    	MenuItem item = menu.findItem(R.id.online);
+    	if (online) item.setTitle("Work Online");
+    		else item.setTitle("Work Offline");
+
+    	return super.onPrepareOptionsMenu(menu);
+    }
+    
     public boolean onCreateOptionsMenu(Menu menu){
     	MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.layout.main_menu, menu);    	
+        inflater.inflate(R.layout.main_menu, menu);
     	return true;
     }
     
@@ -37,6 +46,12 @@ public class MeteorGraphActivity extends Activity {
             case R.id.text:
             	startActivityForResult(new Intent(this, IndexActivity.class), 42);
                 break;
+            case R.id.online:
+            	online = !item.isChecked();
+            	item.setChecked(online);
+            	if (online) item.setTitle("Work Online");
+            	else item.setTitle("Work Offline");
+            	break;
         }
         return true;
     }
@@ -64,7 +79,6 @@ public class MeteorGraphActivity extends Activity {
 			int width = getWidth(); //metrics.widthPixels;
 			int height = getHeight(); //metrics.heightPixels;
 			int smaller_size = (width > height) ? width : height;
-
 			mg.draw(canvas, smaller_size);
 			
 

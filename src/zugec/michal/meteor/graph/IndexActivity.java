@@ -55,6 +55,7 @@ public class IndexActivity extends ListActivity {
     }
 
     private void import_data(){
+    	if (MeteorGraphActivity.online){
 		try {
 			URL url = new URL(UrlBase);
 			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
@@ -77,6 +78,7 @@ public class IndexActivity extends ListActivity {
 					              + "    Can't fetch data", Toast.LENGTH_LONG).show();
 			e.printStackTrace();
 		}
+    	}
     	DataStorage ds = new DataStorage(mContext);
     	for(String file:ds.getFilesIndex()){
     		if(!texts.contains(file)){
