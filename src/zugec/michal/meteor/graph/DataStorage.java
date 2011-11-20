@@ -69,9 +69,13 @@ public class DataStorage{
 	public ArrayList<ArrayList<Integer>> getFileData(String UrlBase, String URL) {
 		// TODO: check if there is any record for URL in the database
 		// in case of true, fetch and return that data
-        Cursor cursor = this.db.rawQuery("SELECT value from observations WHERE filename = \""+URL+"\";", null);
-        Log.i(this.toString(), "fetched rows:" + cursor.getCount());
-		return fetchHTTPData(UrlBase, URL);
+        Cursor cursor = this.db.rawQuery("SELECT value from observations WHERE filename = \""+URL+"\"", null);
+        if(cursor.getCount()==0){
+        	return fetchHTTPData(UrlBase, URL);
+        } else {
+        	// FIXME: fetch data from database
+        	return null;
+        }
 	}
 
 	private ArrayList<ArrayList<Integer>>fetchHTTPData(String UrlBase, String URL){
@@ -113,7 +117,9 @@ public class DataStorage{
 					    	year  = tagmatch.group(2);
 					    }
 						String date = year+"-"+month+"-"+String.format("%02d", day);
-						Log.i(URL, "Date:"+date+", time:"+String.format("%02d:00", i-1));
+						String time = String.format("%02d:00", i-1);
+//						Log.i(URL, "Date:"+date+", time:"+time);
+						insert(URL, date, time, val);
 						tmp_list.add(val);
 					}
 				}
