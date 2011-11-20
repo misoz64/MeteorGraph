@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
+//import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -59,10 +59,10 @@ public class MeteorGraphActivity extends Activity {
 		{
 			super.onDraw(canvas);
 			setTitle(!IndexActivity.URL.isEmpty() ? IndexActivity.URL : "Meteor Graph");
-			DisplayMetrics metrics = new DisplayMetrics();
-			getWindowManager().getDefaultDisplay().getMetrics(metrics);
-			int width = metrics.widthPixels;
-			int height = metrics.heightPixels;
+//			DisplayMetrics metrics = new DisplayMetrics();
+//			getWindowManager().getDefaultDisplay().getMetrics(metrics);
+			int width = getWidth(); //metrics.widthPixels;
+			int height = getHeight(); //metrics.heightPixels;
 			int smaller_size = (width > height) ? width : height;
 
 			mg.draw(canvas, smaller_size);
