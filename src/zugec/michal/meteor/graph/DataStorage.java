@@ -6,6 +6,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -62,7 +64,74 @@ public class DataStorage{
 	      }
 	      return list;
 	   }
-	 
+
+	   
+	public ArrayList<ArrayList<Integer>> getFileData(String UrlBase, String URL) {
+		// TODO: check if there is any record for URL in the database
+		// in case of true, fetch and return that data
+        Cursor cursor = this.db.rawQuery("SELECT value from observations WHERE filename = \""+URL+"\";", null);
+        Log.i(this.toString(), "fetched rows:" + cursor.getCount());
+		return fetchHTTPData(UrlBase, URL);
+	}
+
+	private ArrayList<ArrayList<Integer>>fetchHTTPData(String UrlBase, String URL){
+		ArrayList<ArrayList<Integer>> data = new ArrayList<ArrayList<Integer>>();
+		try {
+			URL url = new URL(UrlBase+URL);
+			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+			data = new ArrayList<ArrayList<Integer>>();
+			String line;
+			max_value = 0;
+			int line_num = -1;
+			while((line=br.readLine())!=null){
+				line_num++;					
+				if (line_num<=0){ continue; }
+				String[] array_line=line.split("\\|");
+
+				Integer day = -1;
+				ArrayList<Integer> tmp_list = new ArrayList<Integer>();
+				for(int i=0;i<array_line.length;i++){
+					Integer val = 0;
+					try{
+						val = Integer.valueOf(array_line[i].trim());
+						if (val > max_value){
+							max_value = val;
+						}
+					}
+					catch(Exception e){
+						val = -1;
+					}
+					if(i==0){
+						day = val;
+					} else{
+						String month="00";
+						String year="0000";
+					    Pattern link = Pattern.compile("[^_]*_([\\d]{2})([\\d]{4})rmob.TXT");;
+					    Matcher tagmatch = link.matcher(URL);
+					    if (tagmatch.find()) {
+					    	month = tagmatch.group(1);
+					    	year  = tagmatch.group(2);
+					    }
+						String date = year+"-"+month+"-"+String.format("%02d", day);
+						Log.i(URL, "Date:"+date+", time:"+String.format("%02d:00", i-1));
+						tmp_list.add(val);
+					}
+				}
+				data.add(tmp_list);
+			}
+			br.close();
+		} catch (MalformedURLException e){
+			Toast.makeText(context, "Error: maiformed URL", Toast.LENGTH_LONG).show();
+			e.printStackTrace();			
+		} catch (Exception e) {
+			Toast.makeText(context, "Internet connection error:\n"
+					              + "    Can't fetch data", Toast.LENGTH_LONG).show();
+			e.printStackTrace();
+		}
+		return data;
+	}
+	   
+	   
 	   private static class OpenHelper extends SQLiteOpenHelper {
 	 
 	      OpenHelper(Context context) {
@@ -82,48 +151,6 @@ public class DataStorage{
 	         onCreate(db);
 	      }
 	   }
-
-	public ArrayList<ArrayList<Integer>> getFileData(String uRL) {
-		ArrayList<ArrayList<Integer>> data = new ArrayList<ArrayList<Integer>>();
-		try {
-			URL url = new URL(uRL);
-			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
-			data = new ArrayList<ArrayList<Integer>>();
-			String line;
-			max_value = 0;
-			int line_num = -1;
-			while((line=br.readLine())!=null){
-				line_num++;					
-				if (line_num<=0){ continue; }
-				String[] array_line=line.split("\\|");
-
-				ArrayList<Integer> tmp_list = new ArrayList<Integer>();
-				for(int i=0;i<array_line.length;i++){
-					Integer val = 0;
-					try{
-						val = Integer.valueOf(array_line[i].trim());
-						if (val > max_value){
-							max_value = val;
-						}
-					}
-					catch(Exception e){
-						val = -1;
-					}
-					tmp_list.add(val);
-				}
-				data.add(tmp_list);
-			}
-			br.close();
-		} catch (MalformedURLException e){
-			Toast.makeText(context, "Error: maiformed URL", Toast.LENGTH_LONG).show();
-			e.printStackTrace();			
-		} catch (Exception e) {
-			Toast.makeText(context, "Internet connection error:\n"
-					              + "    Can't fetch data", Toast.LENGTH_LONG).show();
-			e.printStackTrace();
-		}
-		return data;
-	}
 
 	public Integer getMaxValue() {
 		return max_value;

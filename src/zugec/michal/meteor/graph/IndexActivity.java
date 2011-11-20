@@ -24,7 +24,7 @@ public class IndexActivity extends ListActivity {
 	public static String INTENT_BUNDLE_TEXT = "text";
 	
 	public static String URL = "";
-	private String UrlBase = "http://smrst.meteory.sk/rmob/";
+	public static String UrlBase = "http://smrst.meteory.sk/rmob/";
     private static ArrayList<String> texts = new ArrayList<String>();
 
     private static class SelectTextAdapter extends BaseAdapter {
@@ -59,18 +59,13 @@ public class IndexActivity extends ListActivity {
 			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
 			String line;
 			while((line=br.readLine())!=null){
-				// Copy & pasted (a bit changed) regexp magic
-				// FIXME: any hero - please help and reduce this huge code !!!
+				// Extracted url from <a...></a>
 				if (line.matches(".*<a\\s+href.*rmob.TXT.*")){
-				       Pattern link = Pattern.compile("href=\"[^>]*\">.*</[aA]>");;
-				        Pattern htmltag = Pattern.compile("<a\\b[^>]*href=\"[^>]*>(.*?)</a>");
-				        Matcher tagmatch = htmltag.matcher(line);
-				        if (tagmatch.find()) {
-				                Matcher matcher = link.matcher(tagmatch.group());
-				                matcher.find();
-				                String s_link = matcher.group().replaceFirst("[^>]*>", "").replaceFirst("</[aA]>", "");
-								texts.add(s_link);
-				        }
+				    Pattern link = Pattern.compile("href=\"([^>]*)\">.*</[aA]>");;
+				    Matcher tagmatch = link.matcher(line);
+				    if (tagmatch.find()) {
+						texts.add(tagmatch.group(1));
+				    }
 				}
 			}
 			br.close();
@@ -95,7 +90,7 @@ public class IndexActivity extends ListActivity {
         ListView lv = getListView();
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                     URL = UrlBase + (String)parent.getItemAtPosition(position);
+                     URL = (String)parent.getItemAtPosition(position);
                 	 startActivity(new Intent(IndexActivity.this, MeteorGraphActivity.class));
                  }
          });                   

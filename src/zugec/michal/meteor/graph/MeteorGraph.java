@@ -19,7 +19,7 @@ public class MeteorGraph {
 	}
 	
 	private void import_data(Context context){
-		data = dataStorage.getFileData(IndexActivity.URL);
+		data = dataStorage.getFileData(IndexActivity.UrlBase, IndexActivity.URL);
 		max_value = dataStorage.getMaxValue();
 	}
 	
@@ -89,7 +89,7 @@ public class MeteorGraph {
 				y_pos+=cell_border;
 				int cell_color = Color.BLACK;
 				try{
-					Integer val = data.get(x).get(y+1);
+					Integer val = data.get(x).get(y);
 					if (val>=0){
 						cell_color = color_palette[(int)(((float)val/(float)max_value)*23.0)];
 					}
