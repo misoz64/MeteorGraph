@@ -26,7 +26,6 @@ public class IndexActivity extends ListActivity {
 	public static String UrlBase = "http://smrst.meteory.sk/rmob/";
 	
     private static ArrayList<String> texts = new ArrayList<String>();
-    private static Context mContext;
     
     private static class SelectTextAdapter extends BaseAdapter {
         private final Context mContext;
@@ -54,7 +53,7 @@ public class IndexActivity extends ListActivity {
 
     }
 
-    private void import_data(){
+    private void import_data(Context mContext){
 		try {
 			URL url = new URL(UrlBase);
 			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
@@ -88,9 +87,8 @@ public class IndexActivity extends ListActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext = this;
 
-        import_data();
+        import_data(this);
         
         setListAdapter(new SelectTextAdapter(this));
         ListView lv = getListView();
